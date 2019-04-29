@@ -12,6 +12,5 @@ These instructions will get you a copy of the project up and running on your loc
 2. Make sure to select MySQL when installing XAMPP.
 3. In XAMPP Control Panel, start Apache and MySQL service.
 4. Clone this repo into xampp/htdocs folder.
-5. In a browser, go to [localhost/phpmyadmin/](http://localhost/phpmyadmin/)
-6. Click on Import tab -> Choose File -> Select SQL Dump file in data folder and Click Go.
-7. In a browser, go to [localhost/FortyNinerRides/public/](http://localhost/FortyNinerRides/public/)
+5. To initialize SQL data, go to [localhost/FortyNinerRides/install.php](http://localhost/FortyNinerRides/install.php).
+6. Once data is initilizaed, to access the webUI go to [localhost/FortyNinerRides/public/](http://localhost/FortyNinerRides/public/)

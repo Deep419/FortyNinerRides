@@ -232,7 +232,7 @@ CREATE TABLE `Ride` (
   `driver` int(11) NOT NULL,
   `pickUpTime` datetime NOT NULL,
   `pickUpLocation` text NOT NULL,
-  `golfCart` int(11) DEFAULT NULL,
+  `golfCart` int(11) NOT NULL,
   PRIMARY KEY (`customer`,`driver`,`pickUpTime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
