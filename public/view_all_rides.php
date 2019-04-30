@@ -9,72 +9,79 @@
 require "../config.php";
 require "../common.php";
 
-if (isset($_POST['submit'])) {
-	if (!hash_equals($_SESSION['csrf'], $_POST['csrf'])) die();
+try  {
+	$connection = new PDO($dsn, $username, $password, $options);
 
-	try  {
-		$connection = new PDO($dsn, $username, $password, $options);
+	$sql =  "SELECT r.customer,
+			(SELECT Person.firstName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.customer) AS
+			customer_firstname,
+			(SELECT Person.lastName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.customer) AS
+			customer_lastname,
+			r.driver,
+			(SELECT Person.firstName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.driver) AS
+			driver_firstname,
+			(SELECT Person.lastName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.driver) AS
+			driver_lastname,
+			r.golfCart,
+			(SELECT g.Make FROM Golfcart g WHERE g.cartID = r.golfCart) AS golfcart_make,
+			(SELECT l.locationName FROM location l WHERE l.locationID = r.pickupLocation) AS locationName,
+			r.pickUpTime as 'date', r.pickUpTime as 'time'			
+			FROM Ride r ORDER BY r.pickUpTime";
 
-		$sql = "SELECT * FROM ride WHERE location = :location";
+	$statement = $connection->prepare($sql);
+	// $statement->bindParam(':location', $location, PDO::PARAM_STR);
+	$statement->execute();
 
-		$location = $_POST['location'];
-		$statement = $connection->prepare($sql);
-		$statement->bindParam(':location', $location, PDO::PARAM_STR);
-		$statement->execute();
-
-		$result = $statement->fetchAll();
-	} catch(PDOException $error) {
-			echo $sql . "<br>" . $error->getMessage();
-	}
+	$result = $statement->fetchAll();
+} catch(PDOException $error) {
+		echo $sql . "<br>" . $error->getMessage();
 }
+
 ?>
 <?php require "templates/header.php"; ?>
-				
+<h2>View all Rides</h2>			
 <?php  
-if (isset($_POST['submit'])) {
-	if ($result && $statement->rowCount() > 0) { ?>
-		<h2>Results</h2>
+if ($result && $statement->rowCount() > 0) { ?>
 
-		<table>
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Email Address</th>
-					<th>Age</th>
-					<th>Location</th>
-					<th>Date</th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php foreach ($result as $row) : ?>
-				<tr>
-					<td><?php echo escape($row["id"]); ?></td>
-					<td><?php echo escape($row["firstname"]); ?></td>
-					<td><?php echo escape($row["lastname"]); ?></td>
-					<td><?php echo escape($row["email"]); ?></td>
-					<td><?php echo escape($row["age"]); ?></td>
-					<td><?php echo escape($row["location"]); ?></td>
-					<td><?php echo escape($row["date"]); ?> </td>
-				</tr>
-			<?php endforeach; ?>
-			</tbody>
-		</table>
-		<?php } else { ?>
-			<blockquote>No results found for <?php echo escape($_POST['location']); ?>.</blockquote>
-		<?php } 
-} ?> 
+	<table>
+		<thead>
+			<tr>
+				<th>Rider ID</th>
+				<th>Rider Firstname</th>
+				<th>Rider Lastname</th>
+				<th>Drive ID</th>
+				<th>Driver Firstname</th>
+				<th>Driver Lastname</th>
+				<th>Golf Cart ID</th>
+				<th>Golf Cart Model</th>
+				<th>Location</th>
+				<th>Ride Date</th>
+				<th>Ride Time</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($result as $row) : ?>
+			<tr>
+				<td><?php echo escape($row["customer"]); ?></td>
+				<td><?php echo escape($row["customer_firstname"]); ?></td>
+				<td><?php echo escape($row["customer_lastname"]); ?></td>
+				<td><?php echo escape($row["driver"]); ?></td>
+				<td><?php echo escape($row["driver_firstname"]); ?></td>
+				<td><?php echo escape($row["driver_lastname"]); ?></td>
+				<td><?php echo escape($row["golfCart"]); ?></td>
+				<td><?php echo escape($row["golfcart_make"]); ?></td>
+				<td><?php echo escape($row["locationName"]); ?></td>
+				<td><?php echo escape(date("F jS, Y", strtotime($row["date"]))); ?></td>
+				<td><?php echo escape(date("h:i A", strtotime($row["time"]))); ?></td>				
+			</tr>
+		<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php } else { ?>
+		<blockquote>No results found for <?php echo escape($_POST['location']); ?>.</blockquote>
+	<?php } ?> 
 
-<h2>View all Rides.</h2>
-
-<form method="post">
-	<input name="csrf" type="hidden" value="<?php echo escape($_SESSION['csrf']); ?>">
-	<label for="location">Location</label>
-	<input type="text" id="location" name="location">
-	<input type="submit" name="submit" value="View Results">
-</form>
-
+<br>
 <a href="index.php">Back to home</a>
 
 <?php require "templates/footer.php"; ?>

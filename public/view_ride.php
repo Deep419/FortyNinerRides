@@ -15,11 +15,20 @@ if (isset($_POST['submit'])) {
 	try  {
 		$connection = new PDO($dsn, $username, $password, $options);
 
-		$sql = "SELECT * FROM ride WHERE location = :location";
+		$sql = "SELECT ride.customer as CustomerID, 
+				CONCAT(person.lastName,',',person.firstName) as Rider, 
+				ride.pickUpTime as 'Pick Up Date', ride.pickUpTime as 'Pick Up Time', 
+				location.locationName as Location
+				FROM ride 
+				INNER JOIN person
+				ON person.personID = ride.customer 
+				INNER JOIN location ON ride.pickUpLocation = location.locationID 
+				WHERE ride.customer = :customer_id
+				ORDER BY ride.pickUpTime";
 
-		$location = $_POST['location'];
+		// $customer_id = $_POST['customer_id'];
 		$statement = $connection->prepare($sql);
-		$statement->bindParam(':location', $location, PDO::PARAM_STR);
+		$statement->bindParam(':customer_id', $customer_id, PDO::PARAM_STR);
 		$statement->execute();
 
 		$result = $statement->fetchAll();
@@ -38,43 +47,44 @@ if (isset($_POST['submit'])) {
 		<table>
 			<thead>
 				<tr>
-					<th>#</th>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Email Address</th>
-					<th>Age</th>
-					<th>Location</th>
-					<th>Date</th>
+				<th>CustomerID</th>
+				<th>Rider</th>
+				<th>Ride Date</th>
+				<th>Ride Time</th>
+				<th>Location</th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php foreach ($result as $row) : ?>
 				<tr>
-					<td><?php echo escape($row["id"]); ?></td>
-					<td><?php echo escape($row["firstname"]); ?></td>
-					<td><?php echo escape($row["lastname"]); ?></td>
-					<td><?php echo escape($row["email"]); ?></td>
-					<td><?php echo escape($row["age"]); ?></td>
-					<td><?php echo escape($row["location"]); ?></td>
-					<td><?php echo escape($row["date"]); ?> </td>
+					<td><?php echo escape($row["CustomerID"]); ?></td>
+					<td><?php echo escape($row["Rider"]); ?></td>
+					<td><?php echo escape(date("F jS, Y", strtotime($row["Pick Up Date"]))); ?></td>
+					<td><?php echo escape(date("h:i A", strtotime($row["Pick Up Time"]))); ?></td>
+					<td><?php echo escape($row["Location"]); ?></td>
 				</tr>
 			<?php endforeach; ?>
 			</tbody>
 		</table>
-		<?php } else { ?>
-			<blockquote>No results found for <?php echo escape($_POST['location']); ?>.</blockquote>
+		<?php } else { 
+			if (strlen($_POST['customer_id']) == 0) {?>
+				<blockquote>Please enter your ID.</blockquote>
+			<?php } else {?>
+			<blockquote>No results found for ID:<?php echo escape($_POST['customer_id']); ?>.</blockquote>
+			<?php }?>
 		<?php } 
 } ?> 
 
-<h2>View all Rides.</h2>
+<h2>View Rides.</h2>
 
 <form method="post">
 	<input name="csrf" type="hidden" value="<?php echo escape($_SESSION['csrf']); ?>">
-	<label for="location">Enter your ID</label>
-	<input type="text" id="location" name="location">
-	<input type="submit" name="submit" value="View Rides">
+	<label for="customer_id">Enter your ID</label>
+	<input type="text" id="customer_id" name="customer_id">
+	<input type="submit" name="submit" value="View Your Rides">
 </form>
-
+<a href="view_all_rides.php">Click here to view all rides.</a>
+<br>
 <a href="index.php">Back to home</a>
 
 <?php require "templates/footer.php"; ?>
