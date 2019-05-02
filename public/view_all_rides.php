@@ -13,20 +13,20 @@ try  {
 	$connection = new PDO($dsn, $username, $password, $options);
 
 	$sql =  "SELECT r.customer,
-			(SELECT Person.firstName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.customer) AS
+			(SELECT person.firstName FROM person FORCE INDEX(Person_By_Type) WHERE personID = r.customer) AS
 			customer_firstname,
-			(SELECT Person.lastName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.customer) AS
+			(SELECT person.lastName FROM person FORCE INDEX(Person_By_Type) WHERE personID = r.customer) AS
 			customer_lastname,
 			r.driver,
-			(SELECT Person.firstName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.driver) AS
+			(SELECT person.firstName FROM person FORCE INDEX(Person_By_Type) WHERE personID = r.driver) AS
 			driver_firstname,
-			(SELECT Person.lastName FROM Person FORCE INDEX(Person_By_Type) WHERE personID = r.driver) AS
+			(SELECT person.lastName FROM person FORCE INDEX(Person_By_Type) WHERE personID = r.driver) AS
 			driver_lastname,
 			r.golfCart,
-			(SELECT g.Make FROM Golfcart g WHERE g.cartID = r.golfCart) AS golfcart_make,
+			(SELECT g.Make FROM golfcart g WHERE g.cartID = r.golfCart) AS golfcart_make,
 			(SELECT l.locationName FROM location l WHERE l.locationID = r.pickupLocation) AS locationName,
 			r.pickUpTime as 'date', r.pickUpTime as 'time'			
-			FROM Ride r ORDER BY r.pickUpTime";
+			FROM ride r ORDER BY r.pickUpTime";
 
 	$statement = $connection->prepare($sql);
 	// $statement->bindParam(':location', $location, PDO::PARAM_STR);

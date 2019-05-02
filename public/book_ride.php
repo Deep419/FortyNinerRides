@@ -103,7 +103,7 @@ if (isset($_POST['book'])) {
 					":" . implode(", :", array_keys($new_ride))
 				);
 
-				print_r($sql);
+				// print_r($sql);
 				
 				$statement = $connection->prepare($sql);
 				$statement->execute($new_ride);

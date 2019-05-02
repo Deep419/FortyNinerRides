@@ -14,6 +14,8 @@ if (isset($_POST['submit'])) {
 
 	try  {
 		$connection = new PDO($dsn, $username, $password, $options);
+		$customer_id = $_POST['customer_id'];
+		// echo $_POST['submit'];
 
 		$sql = "SELECT ride.customer as CustomerID, 
 				CONCAT(person.lastName,',',person.firstName) as Rider, 
