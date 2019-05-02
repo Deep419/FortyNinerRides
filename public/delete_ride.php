@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Delete a user
+ * Delete a ride
  */
 
 require "../config.php";

@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Use an HTML form to edit an entry in the
- * users table.
+ * Use an HTML form to edit an entry in the rides table.
  *
  */
 

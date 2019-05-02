@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Use an HTML form to create a new entry in the
- * users table.
+ * Use an HTML form to create a new entry in the ride table.
  *
  */
 

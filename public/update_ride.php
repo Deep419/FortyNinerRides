@@ -1,7 +1,7 @@
 <?php
 
 /**
- * List all users with a link to edit
+ * List all rides with a link to edit.
  */
 
 require "../config.php";
